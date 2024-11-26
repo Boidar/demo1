@@ -27,7 +27,7 @@ public class UserService implements UserDetailsService {
     public void setUserRepository(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
-
+    @Transactional
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
@@ -40,14 +40,13 @@ public class UserService implements UserDetailsService {
             throw new UsernameNotFoundException(String.format("User '%s' not found", username));
         }
 
-        return new org.springframework.security.core.userdetails.User(user.getName(),user.getPassword(),mapRoles(user.getRoles()));
+        return user;
     }
-    private Collection<? extends GrantedAuthority> mapRoles(Collection<Role> roles) {
-        return roles.stream().map(r -> new SimpleGrantedAuthority(r.getName())).collect(Collectors.toList());
-    }
+    @Transactional
     public List<User> listUsers() {
         return userRepository.findAll();
     }
+    @Transactional
     public User findById(Long id) {
         return userRepository.getOne(id);
     }
